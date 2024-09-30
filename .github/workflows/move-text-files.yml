@@ -29,14 +29,14 @@ jobs:
       - name: Commit and push to second repository
         run: |
           cd ../second-repo
-          # Check if the directory is already a Git repository
+          # Initialize the git repository if it hasn't been initialized
           if [ ! -d .git ]; then
             git init
             git remote add origin https://github.com/2002lokesh/second-repo.git
           fi
           git config user.name "2002lokesh"
           git config user.email "lokeshkcse314@gmail.com"
-          
+
           # Create main branch if it doesn't exist
           if [ $(git branch | grep -c main) -eq 0 ]; then
               git checkout -b main
@@ -44,6 +44,7 @@ jobs:
 
           git add .
           git commit -m "Add moved files" || echo "No changes to commit"
+          # Use the GITHUB_TOKEN for authentication
           git push -u origin main --force
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use the GitHub token for authentication
