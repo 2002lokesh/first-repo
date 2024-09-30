@@ -19,8 +19,14 @@ jobs:
         run: |
           # Create the second repository directory if it doesn't exist
           mkdir -p ../second-repo
-          mv *.txt ../second-repo/
-          echo "Moved text files to second repository."
+          
+          # Move all .txt files to the second repository
+          if ls *.txt 1> /dev/null 2>&1; then
+              mv *.txt ../second-repo/
+              echo "Moved text files to second repository."
+          else
+              echo "No .txt files found to move."
+          fi
 
       - name: Commit and push to second repository
         run: |
@@ -32,6 +38,12 @@ jobs:
           fi
           git config user.name "2002lokesh"
           git config user.email "lokeshkcse314@gmail.com"
+          
+          # Create main branch if it doesn't exist
+          if [ $(git branch | grep -c main) -eq 0 ]; then
+              git checkout -b main
+          fi
+
           git add .
           git commit -m "Add moved text files" || echo "No changes to commit"
           git push -u origin main --force
