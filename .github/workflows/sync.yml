@@ -12,13 +12,19 @@ jobs:
       - name: Checkout first repo
         uses: actions/checkout@v2
 
+      - name: Clone the second repository
+        run: |
+          # Clone the second repository into a temporary directory
+          git clone https://github.com/2002lokesh/second-repo.git temp-repo
+          
       - name: Copy files to second repo
         run: |
-          # Clone the second repository
-          git clone https://github.com/2002lokesh/second-repo.git
-          # Copy files to the second repo directory
-          cp -r * second-repo/  # Copy all files; adjust as needed
-          cd second-repo
+          # Copy files from the first repo to the cloned second repo directory
+          cp -r * temp-repo/  # Copy all files; adjust as needed
+          
+      - name: Commit and push changes to the second repo
+        run: |
+          cd temp-repo
           # Set up git configuration
           git config user.name "2002lokesh"
           git config user.email "lokeshkcse314@gmail.com"
