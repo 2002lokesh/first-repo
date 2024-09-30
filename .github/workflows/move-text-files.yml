@@ -34,6 +34,8 @@ jobs:
             git init
             git remote add origin https://github.com/2002lokesh/second-repo.git
           fi
+
+          # Configure user for commit
           git config user.name "2002lokesh"
           git config user.email "lokeshkcse314@gmail.com"
 
@@ -44,7 +46,8 @@ jobs:
 
           git add .
           git commit -m "Add moved files" || echo "No changes to commit"
-          # Use the GITHUB_TOKEN for authentication
-          git push -u origin main --force
+
+          # Set up the push to use the GITHUB_TOKEN for authentication
+          git push --set-upstream origin main --force
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use the GitHub token for authentication
