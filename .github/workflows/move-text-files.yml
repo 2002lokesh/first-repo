@@ -1,0 +1,36 @@
+name: Move Text Files to Second Repo
+
+on:
+  push:
+    branches:
+      - main  # Adjust this to your default branch if different
+    paths:
+      - '*.txt'  # Only trigger for text files
+
+jobs:
+  move-file:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout first repository
+        uses: actions/checkout@v2
+
+      - name: Move text files to second repository
+        run: |
+          # Move all .txt files to the second repository
+          mkdir -p ../second-repo
+          mv *.txt ../second-repo/
+          echo "Moved text files to second repository."
+
+      - name: Commit and push to second repository
+        run: |
+          cd ../second-repo
+          git init
+          git config --global user.name "2002lokesh"
+          git config --global user.email "lokeshkcse314@gmail.com"
+          git add .
+          git commit -m "Add moved text files"
+          git remote add origin https://github.com/2002lokesh/second-repo.git
+          git push -u origin main --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
