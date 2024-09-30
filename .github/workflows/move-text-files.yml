@@ -17,7 +17,7 @@ jobs:
 
       - name: Move text files to second repository
         run: |
-          # Move all .txt files to the second repository
+          # Create the second repository directory if it doesn't exist
           mkdir -p ../second-repo
           mv *.txt ../second-repo/
           echo "Moved text files to second repository."
@@ -25,12 +25,15 @@ jobs:
       - name: Commit and push to second repository
         run: |
           cd ../second-repo
-          git init
-          git config --global user.name "2002lokesh"
-          git config --global user.email "lokeshkcse314@gmail.com"
+          # Check if the directory is already a Git repository
+          if [ ! -d .git ]; then
+            git init
+            git remote add origin https://github.com/2002lokesh/second-repo.git
+          fi
+          git config user.name "2002lokesh"
+          git config user.email "lokeshkcse314@gmail.com"
           git add .
-          git commit -m "Add moved text files"
-          git remote add origin https://github.com/2002lokesh/second-repo.git
+          git commit -m "Add moved text files" || echo "No changes to commit"
           git push -u origin main --force
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
