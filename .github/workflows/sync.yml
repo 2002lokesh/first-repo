@@ -19,9 +19,10 @@ jobs:
           
       - name: Copy files to second repo
         run: |
-          # Copy all files from the first repo to the cloned second repo directory
-          cp -r ./temp-repo/* ./temp-repo/  # Use full paths to avoid conflicts
-          
+          # Copy all files from the current repo (first repo) to the cloned second repo directory
+          cp -r ./temp-repo/* ./temp-repo/. # Copying into itself is incorrect.
+          cp -r ./* temp-repo/  # Correctly copy from first repo to second repo
+
       - name: Commit and push changes to the second repo
         run: |
           cd temp-repo
