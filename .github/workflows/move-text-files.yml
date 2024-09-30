@@ -1,11 +1,9 @@
-name: Move Text Files to Second Repo
+name: Move Files to Second Repo
 
 on:
   push:
     branches:
       - main  # Adjust this to your default branch if different
-    paths:
-      - '*.txt'  # Only trigger for text files
 
 jobs:
   move-file:
@@ -15,17 +13,17 @@ jobs:
       - name: Checkout first repository
         uses: actions/checkout@v2
 
-      - name: Move text files to second repository
+      - name: Move files to second repository
         run: |
           # Create the second repository directory if it doesn't exist
           mkdir -p ../second-repo
           
-          # Move all .txt files to the second repository
-          if ls *.txt 1> /dev/null 2>&1; then
-              mv *.txt ../second-repo/
-              echo "Moved text files to second repository."
+          # Move all files to the second repository
+          if [ "$(ls -A .)" ]; then
+              mv * ../second-repo/
+              echo "Moved files to second repository."
           else
-              echo "No .txt files found to move."
+              echo "No files found to move."
           fi
 
       - name: Commit and push to second repository
@@ -45,7 +43,7 @@ jobs:
           fi
 
           git add .
-          git commit -m "Add moved text files" || echo "No changes to commit"
+          git commit -m "Add moved files" || echo "No changes to commit"
           git push -u origin main --force
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
