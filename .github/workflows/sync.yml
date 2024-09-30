@@ -1,0 +1,28 @@
+name: Sync to Second Repository
+
+on:
+  push:
+    branches:
+      - main  # Change this to your branch name if necessary
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout first repo
+        uses: actions/checkout@v2
+
+      - name: Copy files to second repo
+        run: |
+          # Clone the second repository
+          git clone https://github.com/2002lokesh/second-repo.git
+          # Copy files to the second repo directory
+          cp -r * second-repo/  # Copy all files; adjust as needed
+          cd second-repo
+          # Set up git configuration
+          git config user.name "2002lokesh"
+          git config user.email "lokeshkcse314@gmail.com"
+          # Add, commit, and push changes
+          git add .
+          git commit -m "Sync from first repo" || echo "No changes to commit"
+          git push https://2002lokesh:${{ secrets.SECOND_REPO_TOKEN }}@github.com/2002lokesh/second-repo.git main
