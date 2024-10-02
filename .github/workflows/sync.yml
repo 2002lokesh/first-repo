@@ -1,36 +1,38 @@
-name: Sync Repositories on Push
+name: Auto Pull Request
 
 on:
   push:
     branches:
-      - main  # Trigger on commits to the 'main' branch of the development repo
+      - main  # Trigger the workflow on pushes to the main branch
+  schedule:
+    - cron: '0 * * * *'  # Scheduled to run every hour (UTC)
 
 jobs:
-  sync-repo:
+  pull_request:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout first-repo
-      uses: actions/checkout@v2
-      with:
-        repository: '2002lokesh/first-repo'  # Updated to your repository
-        ref: main  # Default branch
-        token: ${{ secrets.test }}  # Personal access token renamed to 'test'
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Configure Git user
-      run: |
-        git config --global user.email "lokeshkcse314@gmail.com"
-        git config --global user.name "2002lokesh"
+      - name: Pull latest changes
+        run: |
+          git fetch origin
+          git checkout main
+          git pull origin main
 
-    - name: Pull latest changes from first-repo repository
-      run: |
-        git pull origin main --rebase  # Pull and rebase to avoid conflicts
-
-    - name: Push changes to first-repo repository
-      run: |
-        git push origin main  # Push to the main branch of your first-repo
-
-    - name: Show recently committed folders and files
-      run: |
-        echo "Listing recently committed files and folders:"
-        git log -1 --name-status --oneline
+      - name: Create Pull Request
+        id: create_pr
+        run: |
+          git config --local user.email "lokeshkcse314@gmail.com"  # Set your email
+          git config --local user.name "2002lokesh"  # Set your name
+          
+          # Check if there are any changes to commit
+          if ! git diff --quiet; then
+            git add .
+            git commit -m "Automated Pull Request"
+            git push origin main
+            echo "Pull request created."
+          else
+            echo "No changes to commit."
+          fi
