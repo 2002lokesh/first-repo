@@ -13,10 +13,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up SSH key
-        uses: webfactory/ssh-agent@v0.5.4  # Use the latest stable version
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Add SSH key
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > chatbot_key.pem
+          chmod 600 chatbot_key.pem
 
       - name: Restart Uvicorn via SSH
         run: |
@@ -24,5 +24,3 @@ jobs:
             sudo systemctl restart uvicorn
             sudo systemctl status uvicorn
           EOF
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
