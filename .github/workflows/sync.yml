@@ -1,38 +1,28 @@
-name: Auto Pull Request
+name: Restart Uvicorn on Server
 
 on:
   push:
     branches:
-      - main  # Trigger the workflow on pushes to the main branch
-  schedule:
-    - cron: '0 * * * *'  # Scheduled to run every hour (UTC)
+      - main  # Trigger on push to the main branch
 
 jobs:
-  pull_request:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Pull latest changes
-        run: |
-          git fetch origin
-          git checkout main
-          git pull origin main
+      - name: Set up SSH key
+        uses: webfactory/ssh-agent@v0.5.4  # Use the latest stable version
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Create Pull Request
-        id: create_pr
+      - name: Restart Uvicorn via SSH
         run: |
-          git config --local user.email "lokeshkcse314@gmail.com"  # Set your email
-          git config --local user.name "2002lokesh"  # Set your name
-          
-          # Check if there are any changes to commit
-          if ! git diff --quiet; then
-            git add .
-            git commit -m "Automated Pull Request"
-            git push origin main
-            echo "Pull request created."
-          else
-            echo "No changes to commit."
-          fi
+          ssh -o StrictHostKeyChecking=no -i chatbot_key.pem azureuser@4.145.88.243 << 'EOF'
+            sudo systemctl restart uvicorn
+            sudo systemctl status uvicorn
+          EOF
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
